@@ -2,13 +2,41 @@ const jobQueueDOM = document.querySelector('.job-queue')
     , readyQueueDOM = document.querySelector('.ready-queue')
     , deviceQueueDOM = document.querySelector('.device-queue')
     , cpuDOM = document.querySelector('.cpu')
-    , interruptLog = document.querySelector('.interrupt-log')
+    , log = document.querySelector('.log')
     , newProcess = document.querySelector('.new-process')
     , interruptSelect = newProcess.querySelector('#interrupt')
     , newBtn = newProcess.querySelector('input');
 
 let pidCount = 0,
     interrptTimeMap = new Map();
+
+const logInterrupt = (pid) => {
+    const pidLog = log.querySelector(`.pid${pid}`)
+        , msg = document.createElement('span');
+    msg.innerText = `=> I/O interrupt! `;
+    pidLog.appendChild(msg);
+}
+
+const logNew = (pid) => {
+    const pidLog = document.createElement('li');
+    pidLog.className = `pid${pid}`;
+    pidLog.innerText = `PID: ${pid} => New! `;
+    log.appendChild(pidLog);
+}
+
+const logTerminate = (pid) => {
+    const pidLog = log.querySelector(`.pid${pid}`)
+        , msg = document.createElement('span');
+    msg.innerText = `=> Terminate! `;
+    pidLog.appendChild(msg);
+}
+
+const logDispatch = (pid) => {
+    const pidLog = log.querySelector(`.pid${pid}`)
+        , msg = document.createElement('span');
+    msg.innerText = `=> Dispatch! `;
+    pidLog.appendChild(msg);
+}
 
 const createProcess = () => {
     pidCount += 1;
@@ -80,11 +108,7 @@ const process = () => {
         if (interrptTime && pVlaue/25 == interrptTime) {
 
             // interrupt
-            console.log("interrupt!!!")
-            // const msg = documnet.createElement('li');
-            // msg.innerText = 'interrupt';
-            // interruptLog.appendChild(msg);
-
+            logInterrupt(pid);
             interrptTimeMap.delete(pid);
             contextSwitch(runningProcess);
         }
@@ -94,12 +118,11 @@ const process = () => {
         const processInDisk = jobQueueDOM.querySelector('.pid'+pid)
         cpuDOM.removeChild(runningProcess);
         jobQueueDOM.removeChild(processInDisk);
-        console.log(`done ${pid}`);
+        logTerminate(pid);
     }
 }
 
 const run = () => {
-    let count = 0;
     const timerId = setInterval(() => {
         let cpuIsIdle = cpuDOM.querySelector('.pcb') == null
             , readyQIsEmpty = readyQueueDOM.querySelector('.pcb') == null;
@@ -110,7 +133,6 @@ const run = () => {
                 
                 // cpu is idle
                 clearInterval(timerId);
-                count+=1;
                 dispatch();
         }
  
@@ -123,7 +145,10 @@ const dispatch = () => {
         const cpuIsIdle = cpuDOM.querySelector('.pcb') == null;
         if (cpuIsIdle) {
             clearInterval(timerId);
-            const targetPcb = readyQueueDOM.firstElementChild; // dequeue
+            const targetPcb = readyQueueDOM.firstElementChild // dequeue
+                , pidDOM = targetPcb.querySelector('.pidValue')
+                , pid = pidDOM.innerText;
+            logDispatch(pid);
             cpuDOM.appendChild(targetPcb);  // enqueue
             run();        
         }
@@ -132,9 +157,12 @@ const dispatch = () => {
 
 const handleNew = (e) => {
     e.preventDefault();
-    const pcbDOM = createProcess();
-    const pcbDisk = pcbDOM.cloneNode(true);
-    
+    const pcbDOM = createProcess()
+        , pcbDisk = pcbDOM.cloneNode(true)
+        , pidDOM = pcbDOM.querySelector('.pidValue')
+        , pid = pidDOM.innerText;
+
+    logNew(pid);
     jobQueueDOM.appendChild(pcbDisk);
     readyQueueDOM.appendChild(pcbDOM);
 

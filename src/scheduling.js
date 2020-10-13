@@ -1,12 +1,17 @@
-const newBtn = document.querySelector('.new-btn')
-    , jobQueueDOM = document.querySelector('.job-queue')
+const jobQueueDOM = document.querySelector('.job-queue')
     , readyQueueDOM = document.querySelector('.ready-queue')
-    , cpuDOM = document.querySelector('.CPU');
+    , deviceQueueDOM = document.querySelector('.device-queue')
+    , cpuDOM = document.querySelector('.cpu')
+    , interruptLog = document.querySelector('.interrupt-log')
+    , newProcess = document.querySelector('.new-process')
+    , interruptSelect = newProcess.querySelector('#interrupt')
+    , newBtn = newProcess.querySelector('input');
 
-let count = 0;
+let pidCount = 0,
+    interrptTimeMap = new Map();
 
 const createProcess = () => {
-    count += 1;
+    pidCount += 1;
 
     const pcb = document.createElement('li')
         , pid = document.createElement('div')
@@ -14,12 +19,17 @@ const createProcess = () => {
         , pidValue = document.createElement('span')
         , processedValue = document.createElement('span')
         , percent = document.createElement('span');
-
+    
+    const pidStr = String(pidCount);
+    
     pcb.className = 'pcb'
+    pcb.classList.add('pid'+pidStr)
 
     pid.className = 'PID';
     pid.innerText = 'PID: ';
-    pidValue.innerText = count;
+
+    pidValue.className = 'pidValue';
+    pidValue.innerText = pidStr;
 
     processInfo.className = 'processInfo';
     processInfo.innerText = 'processed: ';
@@ -28,54 +38,105 @@ const createProcess = () => {
     processedValue.innerText = 0;
     percent.innerText = '%';
     
+    const interruptTime = parseInt(interruptSelect.value)
+    if (interruptTime) {
+        interrptTimeMap.set(pidStr, interruptTime)
+    }
     
     pcb.appendChild(pid);
-    pcb.appendChild(processInfo);
     pid.appendChild(pidValue);
+
+    pcb.appendChild(processInfo);
     processInfo.appendChild(processedValue);
     processInfo.appendChild(percent);
+    
     return pcb;
 }
 
-const run = (pcbDOM) => {
-    const processValue = pcbDOM.querySelector('.processedValue');
-    const pidDOM = pcbDOM.querySelector('.PID');
-    const pid = pidDOM.innerText;
+const contextSwitch = (runningProcess) => {
+    const storedProcess = runningProcess.cloneNode(true);
+    cpuDOM.removeChild(runningProcess);
+    deviceQueueDOM.appendChild(storedProcess);
+    setTimeout(function(){
+        console.log("I/O event complete");
+        const restoredprocess = storedProcess.cloneNode(true);
+        deviceQueueDOM.removeChild(storedProcess);
+        readyQueueDOM.appendChild(restoredprocess);
+     }, 1000);
+}
 
-    const timerId = setInterval(() => {
-        let pVlaue = parseInt(processValue.innerText);
-        if (pVlaue < 100) {
-            pVlaue += 25;
-            processValue.innerText = pVlaue;
-        } else {
-            console.log(`done ${pid}`);
-            cpuDOM.removeChild(pcbDOM);
-            const newPcbDOM = readyQueueDOM.querySelector('.pcb');
-            clearInterval(timerId);
+const process = () => {
+    let runningProcess = cpuDOM.firstElementChild,
+        processValue = runningProcess.querySelector('.processedValue'),
+        pidDOM = runningProcess.querySelector('.pidValue'),
+        pid = pidDOM.innerText,
+        interrptTime = interrptTimeMap.get(pid);
 
-            if (newPcbDOM) {
-                dispatch(newPcbDOM);
-            }
+    // let's process
+    let pVlaue = parseInt(processValue.innerText);
+    if (pVlaue < 100) {
+        pVlaue += 25;
+        processValue.innerText = pVlaue;
+        if (interrptTime && pVlaue/25 == interrptTime) {
+
+            // interrupt
+            console.log("interrupt!!!")
+            // const msg = documnet.createElement('li');
+            // msg.innerText = 'interrupt';
+            // interruptLog.appendChild(msg);
+
+            interrptTimeMap.delete(pid);
+            contextSwitch(runningProcess);
         }
-    }, 1000);
-}
-
-const dispatch = (pcbDOM) => {
-    cpuDOM.appendChild(pcbDOM);
-    console.log('test')
-    console.log(pcbDOM)
-    run(pcbDOM);
-}
-
-const handleNew = (e) => {
-    const pcbDOM = createProcess();
-    const checker = cpuDOM.querySelector('.pcb');
-    
-    if (checker === null) {
-        dispatch(pcbDOM);
     } else {
-        readyQueueDOM.appendChild(pcbDOM);
+
+        // terminated
+        const processInDisk = jobQueueDOM.querySelector('.pid'+pid)
+        cpuDOM.removeChild(runningProcess);
+        jobQueueDOM.removeChild(processInDisk);
+        console.log(`done ${pid}`);
     }
 }
 
-newBtn.addEventListener('click', handleNew);
+const run = () => {
+    const timerId = setInterval(() => {
+        const cpuIsIdle = cpuDOM.querySelector('.pcb') == null
+            , readyQIsEmpty = readyQueueDOM.querySelector('.pcb') == null;
+
+        if (!cpuIsIdle) {
+            process();
+        } else if (!readyQIsEmpty) {
+
+            // cpu is idle
+            clearInterval(timerId);
+            dispatch();
+        }
+ 
+        console.log("cpu is running...")
+    }, 1000);
+}
+
+const dispatch = () => {
+    const timerId = setInterval(() => {
+        const cpuIsIdle = cpuDOM.querySelector('.pcb') == null;
+        if (cpuIsIdle) {
+            const targetPcb = readyQueueDOM.firstElementChild; // dequeue
+            cpuDOM.appendChild(targetPcb);  // enqueue
+            run();        
+            clearInterval(timerId);
+        }
+    }, 100);
+}
+
+const handleNew = (e) => {
+    e.preventDefault();
+    const pcbDOM = createProcess();
+    const pcbDisk = pcbDOM.cloneNode(true);
+    
+    jobQueueDOM.appendChild(pcbDisk);
+    readyQueueDOM.appendChild(pcbDOM);
+    dispatch();
+
+}
+
+newProcess.addEventListener('submit', handleNew);

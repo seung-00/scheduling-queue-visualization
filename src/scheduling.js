@@ -99,17 +99,19 @@ const process = () => {
 }
 
 const run = () => {
+    let count = 0;
     const timerId = setInterval(() => {
-        const cpuIsIdle = cpuDOM.querySelector('.pcb') == null
+        let cpuIsIdle = cpuDOM.querySelector('.pcb') == null
             , readyQIsEmpty = readyQueueDOM.querySelector('.pcb') == null;
 
         if (!cpuIsIdle) {
             process();
         } else if (!readyQIsEmpty) {
-
-            // cpu is idle
-            clearInterval(timerId);
-            dispatch();
+                
+                // cpu is idle
+                clearInterval(timerId);
+                count+=1;
+                dispatch();
         }
  
         console.log("cpu is running...")
@@ -120,10 +122,10 @@ const dispatch = () => {
     const timerId = setInterval(() => {
         const cpuIsIdle = cpuDOM.querySelector('.pcb') == null;
         if (cpuIsIdle) {
+            clearInterval(timerId);
             const targetPcb = readyQueueDOM.firstElementChild; // dequeue
             cpuDOM.appendChild(targetPcb);  // enqueue
             run();        
-            clearInterval(timerId);
         }
     }, 100);
 }
@@ -135,8 +137,10 @@ const handleNew = (e) => {
     
     jobQueueDOM.appendChild(pcbDisk);
     readyQueueDOM.appendChild(pcbDOM);
-    dispatch();
 
+    if (cpuDOM.querySelector('.pcb') == null) {
+        dispatch();
+    }
 }
 
 newProcess.addEventListener('submit', handleNew);

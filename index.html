@@ -7,19 +7,42 @@
     </head>
     
     <body>
-        <ul class='job-queue'>
+        <div class='job-queue-wrap'>
             <h3>job qeueue</h3>
-        </ul>
-        <ul class='ready-queue'>
+            <ul class='job-queue'>
+            </ul>
+        </div>
+        <div class='ready-queue-wrap'>
             <h3>ready qeueue</h3>
-        </ul>
-        <ul class='device-queue'>
+            <ul class='ready-queue'>
+            </ul>
+        </div>
+        <div class='device-queue-wrap'>
             <h3>device qeueue</h3>
-        </ul>
-        <ul class='CPU'>
+            <ul class='device-queue'>
+            </ul>
+        </div>
+        <div class='cpu-wrap'>
             <h3>CPU</h3>
-        </ul>
-        <input type='button' value='new' class="new-btn">
+            <ul class='cpu'>
+            </ul>
+        </div>
+        <div class='interrupt-log-wrap'>
+            <h3>interrupt log</h3>
+            <ul class='interrupt-log'>
+            </ul>
+        </div>
+        <form class='new-process'>
+            <label>Set I/O interrupt timing
+                <select id='interrupt'>
+                  <option value='0'>없음</option>
+                  <option value='1'>1</option>
+                  <option value='2'>2</option>
+                  <option value='3'>3</option>
+                </select>
+              </label><br />            
+              <input type='submit' value='new!'>
+        </form>
         <script src='src/scheduling.js'></script>
     </body>
 </html>

@@ -1,3 +1,118 @@
 li {
-    list-style: none;
+  list-style: none;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto,
+    Helvetica Neue, sans-serif;
+  font-size: 20px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-block,
+.center-block,
+.bottom-block {
+  flex: 1;
+  display: flex;
+}
+
+.top-block,
+.bottom-block {
+  margin-top: 50px;
+}
+
+h3 {
+  margin: 0px;
+  font-size: 25px;
+}
+
+.new-process {
+  font-weight: 500;
+  display: flex;
+  flex: 1;
+}
+
+select,
+input {
+  height: 40px;
+  width: 70px;
+  font-size: 17px;
+  margin: 5px;
+}
+
+.job-queue-wrap,
+.ready-queue-wrap,
+.device-queue-wrap {
+  flex: 1;
+  text-align: center;
+}
+
+.job-queue > li,
+.ready-queue > li,
+.device-queue > li {
+  background-color: cornflowerblue;
+  color: white;
+  border: solid 2px;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 800;
+}
+
+li {
+  font-size: 18px;
+}
+
+.cpu-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cpu-wrap > h3,
+.cpu-wrap > ul {
+  flex: 1;
+}
+
+.cpu-wrap > h3 {
+  text-align: end;
+}
+
+.cpu > li {
+  background-color: green;
+  color: white;
+  font-weight: 800;
+  width: 12vw;
+  height: 12vw;
+  border-radius: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.new-process,
+.interrupt-log-wrap {
+  display: center;
+  text-align: center;
+  flex: 1;
+}
+
+.new-process {
+  justify-content: center;
+}
+
+.interrupt-log-wrap {
+  flex-direction: column;
+}
+
+.interrupt-log-wrap li {
+  text-align: left;
+  margin: 0vw 10vw;
 }

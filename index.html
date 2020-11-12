@@ -7,42 +7,48 @@
     </head>
     
     <body>
-        <div class='job-queue-wrap'>
-            <h3>job qeueue</h3>
-            <ul class='job-queue'>
-            </ul>
+        <div class='top-block'>
+            <div class='job-queue-wrap'>
+                <h3>job qeueue</h3>
+                <ul class='job-queue'>
+                </ul>
+            </div>
+            <div class='ready-queue-wrap'>
+                <h3>ready qeueue</h3>
+                <ul class='ready-queue'>
+                </ul>
+            </div>
+            <div class='device-queue-wrap'>
+                <h3>device qeueue</h3>
+                <ul class='device-queue'>
+                </ul>
+            </div>
         </div>
-        <div class='ready-queue-wrap'>
-            <h3>ready qeueue</h3>
-            <ul class='ready-queue'>
-            </ul>
+        <div class='center-block'>
+            <div class='cpu-wrap'>
+                <h3>CPU</h3>
+                <ul class='cpu'>
+                </ul>
+            </div>
         </div>
-        <div class='device-queue-wrap'>
-            <h3>device qeueue</h3>
-            <ul class='device-queue'>
-            </ul>
+        <div class='bottom-block'>
+            <form class='new-process'>
+                <label>Set I/O interrupt timing
+                    <select id='interrupt'>
+                    <option value='0'>none</option>
+                    <option value='1'>1</option>
+                    <option value='2'>2</option>
+                    <option value='3'>3</option>
+                    </select>
+                </label><br />            
+                <input type='submit' value='new!'>
+            </form>
+            <div class='interrupt-log-wrap'>
+                <h3>log</h3>
+                <ul class='log'>
+                </ul>
+            </div>
         </div>
-        <div class='cpu-wrap'>
-            <h3>CPU</h3>
-            <ul class='cpu'>
-            </ul>
-        </div>
-        <div class='interrupt-log-wrap'>
-            <h3>log</h3>
-            <ul class='log'>
-            </ul>
-        </div>
-        <form class='new-process'>
-            <label>Set I/O interrupt timing
-                <select id='interrupt'>
-                  <option value='0'>없음</option>
-                  <option value='1'>1</option>
-                  <option value='2'>2</option>
-                  <option value='3'>3</option>
-                </select>
-              </label><br />            
-              <input type='submit' value='new!'>
-        </form>
         <script src='src/scheduling.js'></script>
     </body>
 </html>

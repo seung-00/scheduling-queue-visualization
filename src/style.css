@@ -115,4 +115,5 @@ li {
 .interrupt-log-wrap li {
   text-align: left;
   margin: 0vw 10vw;
+  padding: 4px 0px;
 }

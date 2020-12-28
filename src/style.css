@@ -76,6 +76,7 @@ input {
 
 .job-queue .processInfo {
   visibility: hidden;
+  font-size: 0px;
 }
 
 .device-queue > li {

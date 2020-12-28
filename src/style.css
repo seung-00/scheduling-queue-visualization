@@ -70,8 +70,12 @@ input {
   color: white;
   border: solid 2px;
   border-radius: 8px;
-  padding: 20px 60px;
+  padding: 20px 100px;
   font-weight: 800;
+}
+
+.job-queue .processInfo {
+  visibility: hidden;
 }
 
 .device-queue > li {
